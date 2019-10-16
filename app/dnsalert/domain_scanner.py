@@ -12,7 +12,6 @@ def get_record(domain,record_type):
         myResolver = dns.resolver.Resolver()
         records = myResolver.query(domain, record_type)
         if record_type == "TXT":
-            #results = result.strings for result in records
             for result in records:
                 for item in result.strings:
                     results.append(item.decode())
@@ -27,6 +26,7 @@ def get_record(domain,record_type):
 
 def get_dmarc(domain):
     return check_domains([domain])
+
 
 def scan_domain(domain):
     scan_results = {
