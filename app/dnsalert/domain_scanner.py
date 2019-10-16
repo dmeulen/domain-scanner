@@ -13,8 +13,7 @@ def get_record(domain,record_type):
         records = myResolver.query(domain, record_type)
         if record_type == "TXT":
             for result in records:
-                for item in result.strings:
-                    results.append(item.decode())
+                results = [item.decode() for item in result.strings]
         else:
             results = [result.address for result in records]
     except(dns.resolver.NoAnswer, dns.exception.Timeout) as e:
@@ -24,16 +23,12 @@ def get_record(domain,record_type):
     return results
 
 
-def get_dmarc(domain):
-    return check_domains([domain])
-
-
 def scan_domain(domain):
     scan_results = {
         'A': get_record(domain, 'A'),
         'AAAA': get_record(domain, 'AAAA'),
         'TXT': get_record(domain, 'TXT'),
-        'DMARC': get_dmarc(domain)
+        'DMARC': check_domains([domain])
     }
 
     domain_data = {
@@ -42,6 +37,7 @@ def scan_domain(domain):
     }
 
     # following print statement should be replaced by push to elastic
+    print(json.dumps(domain_data))
     current_app.logger.debug(domain_data)
 
     return 'OK'
